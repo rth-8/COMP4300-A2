@@ -1,0 +1,14 @@
+# Window: windowWidth windowHeight frameLimit fullscreen
+Window 900 600 60 0
+
+# Font: fontFile fontSize fontColor(r,g,b)
+Font ZXDTPMA.ttf 32 255 255 0
+
+# Player: shapeRadius collisionRadius speed(float) fillColor(r,g,b) outlineColor(r,b,g) outlineThickness numberOfVertices
+Player 30 25 5.0 80 80 80 255 0 0 4 8
+
+# Bullet: shapeRadius collisionRadius speed(float) fillColor(r,g,b) outlineColor(r,b,g) outlineThickness numberOfVertices lifespan
+Bullet 10 10 10 255 255 0 255 255 0 2 10 90
+
+# Enemy: shapeRadius collisionRadius minSpeed(float) maxSpeed(float) outlineColor(r,g,b) outlineThickness minOfVertices maxOfVertices smallLifespan spawnInterval
+Enemy 30 25 -3.0 3.0 255 255 255 2 3 8 90 60
