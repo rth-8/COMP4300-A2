@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <memory>
+#include <math.h>
 
 #include "component.h"
 #include "entity.h"
@@ -116,6 +117,11 @@ void Game::sInput()
         }
         else
             fireDelay = 0;
+        
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right) && manager->getEntities("Special").empty())
+        {
+            manager->spawnSpecial(player);
+        }
     }
 }
 
@@ -142,6 +148,34 @@ void Game::sMovement()
         // move player
         if (player->cTransform)
             player->cShape->shape->setPosition(sf::Vector2f(player->cTransform->position.x, player->cTransform->position.y));
+    }
+    
+    for (auto e : manager->getEntities("Special"))
+    {
+        if (player->cTransform && e->cOrbiting)
+        {
+            e->cOrbiting->origin.x = player->cTransform->position.x;
+            e->cOrbiting->origin.y = player->cTransform->position.y;
+        }
+        
+        if (e->cOrbiting)
+        {
+            e->cOrbiting->angle += e->cOrbiting->increment;
+            
+            e->cTransform->position.x = e->cOrbiting->origin.x + e->cOrbiting->radius * cos(e->cOrbiting->angle);
+            e->cTransform->position.y = e->cOrbiting->origin.y + e->cOrbiting->radius * sin(e->cOrbiting->angle);
+            
+            e->cShape->shape->setPosition(sf::Vector2f(e->cTransform->position.x, e->cTransform->position.y));
+        }
+        
+        if (e->cLifespan)
+        {
+            e->cLifespan->lifespan--;
+            if (e->cLifespan->lifespan == 0)
+            {
+                e->kill();
+            }
+        }
     }
     
     // bullets movement
@@ -240,6 +274,21 @@ void Game::sMovement()
     }
 }
 
+bool Game::checkCollision(std::shared_ptr<Entity> & e1, std::shared_ptr<Entity> & e2)
+{
+    float dist2 = 
+        ((e1->cTransform->position.x - e2->cTransform->position.x) * (e1->cTransform->position.x - e2->cTransform->position.x))
+        +
+        ((e1->cTransform->position.y - e2->cTransform->position.y) * (e1->cTransform->position.y - e2->cTransform->position.y));
+                
+    float r2 = (e1->cCollision->radius + e2->cCollision->radius) * (e1->cCollision->radius + e2->cCollision->radius);
+    
+    if (dist2 < r2)
+        return true;
+    else
+        return false;
+}
+
 void Game::sCollisions()
 {
     for (auto e : manager->getEntities("Enemy"))
@@ -247,15 +296,7 @@ void Game::sCollisions()
         // check and process collision between player and enemy 
         if (e->isAlive() && e->cCollision && e->cTransform && player->cCollision && player->cTransform)
         {
-            float dist = 
-                ((e->cTransform->position.x - player->cTransform->position.x) * (e->cTransform->position.x - player->cTransform->position.x))
-                +
-                ((e->cTransform->position.y - player->cTransform->position.y) * (e->cTransform->position.y - player->cTransform->position.y));
-                
-            float R = (e->cCollision->radius + player->cCollision->radius) * (e->cCollision->radius + player->cCollision->radius);
-            
-            // collision!
-            if (dist < R)
+            if (checkCollision(e, player))
             {
                 if (e->cBigEnemy)
                     manager->spawnSmallEnemies(e);
@@ -271,15 +312,7 @@ void Game::sCollisions()
         // check and process collision between enemy and bullets
         for (auto b : manager->getEntities("Bullet"))
         {
-            float dist = 
-                ((e->cTransform->position.x - b->cTransform->position.x) * (e->cTransform->position.x - b->cTransform->position.x))
-                +
-                ((e->cTransform->position.y - b->cTransform->position.y) * (e->cTransform->position.y - b->cTransform->position.y));
-                
-            float R = (e->cCollision->radius + b->cCollision->radius) * (e->cCollision->radius + b->cCollision->radius);
-            
-            // collision!
-            if (dist < R)
+            if (checkCollision(e, b))
             {
                 if (e->cBigEnemy)
                     manager->spawnSmallEnemies(e);
@@ -292,6 +325,23 @@ void Game::sCollisions()
 
                 e->kill();
                 b->kill();
+            }
+        }
+        
+        for (auto spc : manager->getEntities("Special"))
+        {
+            if (checkCollision(e, spc))
+            {
+                if (e->cBigEnemy)
+                    manager->spawnSmallEnemies(e);
+                
+                if (e->cScore)
+                {
+                    score += e->cScore->score;
+                    updateScoreText();
+                }
+
+                e->kill();
             }
         }
     }

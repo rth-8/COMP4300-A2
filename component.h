@@ -68,4 +68,16 @@ public:
     CLifespan(int val);
 };
 
+class COrbiting
+{
+public:
+    Vec2 origin = { 0, 0 };
+    float radius;
+    float angle;
+    float increment;
+    
+    COrbiting() = delete;
+    COrbiting(const Vec2 & o, float r, float a, float inc);
+};
+
 #endif

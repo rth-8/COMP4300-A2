@@ -24,7 +24,7 @@ public:
     
     std::shared_ptr<Entity> spawnPlayer();
     std::shared_ptr<Entity> spawnBullet(const Vec2 & playerPos, const Vec2 & mousePos);
-    void spawnSpecial(const Vec2 & playerPos);
+    void spawnSpecial(std::shared_ptr<Entity> & player);
     
     std::shared_ptr<Entity> spawnEnemy();
     void spawnSmallEnemies(std::shared_ptr<Entity> & bigEnemy);

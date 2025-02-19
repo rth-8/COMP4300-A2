@@ -9,6 +9,7 @@ class CWindowBoundsCollision;
 class CScore;
 class CBigEnemy;
 class CLifespan;
+class COrbiting;
 
 class EntityManager;
 
@@ -34,6 +35,7 @@ public:
     std::shared_ptr<CScore> cScore;
     std::shared_ptr<CBigEnemy> cBigEnemy;
     std::shared_ptr<CLifespan> cLifespan;
+    std::shared_ptr<COrbiting> cOrbiting;
     
     Entity(const Entity & src);
     

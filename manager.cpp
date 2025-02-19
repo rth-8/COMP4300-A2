@@ -76,9 +76,33 @@ std::shared_ptr<Entity> EntityManager::spawnBullet(const Vec2 & playerPos, const
     return e;
 }
 
-void EntityManager::spawnSpecial(const Vec2 & playerPos)
+void EntityManager::spawnSpecial(std::shared_ptr<Entity> & player)
 {
+    int count = 3;
+    float radius = player->cShape->radius + 40;
+    
+    float a = 0;
+    float d = (PI*2) / count;
+    for (int i = 0; i < count; i++)
+    {
+        float x = player->cTransform->position.x + radius * cos(a);
+        float y = player->cTransform->position.y + radius * sin(a);
+        
+        auto e = this->addEntity("Special");
+        
+        e->cShape = std::make_shared<CShape>(x, y, 15, 10);
+        e->cShape->shape->setFillColor(sf::Color::Red);
+        
+        e->cTransform = std::make_shared<CTransform>(Vec2(x,y), Vec2(0,0));
 
+        e->cCollision = std::make_shared<CCollision>(15);
+        
+        e->cOrbiting = std::make_shared<COrbiting>(player->cTransform->position, radius, a, 4*PI/180.0f);
+        
+        e->cLifespan = std::make_shared<CLifespan>(120);
+        
+        a += d;
+    }
 }
 
 std::shared_ptr<Entity> EntityManager::spawnEnemy()

@@ -44,3 +44,7 @@ CScore::CScore(int val) : score(val)
 CLifespan::CLifespan(int val) : lifespan(val)
 {
 }
+
+COrbiting::COrbiting(const Vec2 & o, float r, float a, float inc) : origin(o), radius(r), angle(a), increment(inc)
+{
+}

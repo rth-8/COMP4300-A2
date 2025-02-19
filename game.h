@@ -35,6 +35,8 @@ class Game
     
     void updateScoreText();
     
+    bool checkCollision(std::shared_ptr<Entity> & e1, std::shared_ptr<Entity> & e2);
+    
 public:
     Game(std::shared_ptr<sf::RenderWindow> win);
     
