@@ -47,7 +47,9 @@ std::shared_ptr<Entity> EntityManager::spawnPlayer()
     
     e->cRotation = std::make_shared<CRotation>(0.0f, 2*PI/180.0f);
     
-    e->cCollision = std::make_shared<CCollision>(enemyCfg.collisionRadius);
+    e->cCollision = std::make_shared<CCollision>(playerCfg.collisionRadius);
+    
+    e->cWindowBoundsCollision = std::make_shared<CWindowBoundsCollision>();
     
     return e;
 }

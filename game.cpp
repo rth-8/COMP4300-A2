@@ -64,41 +64,59 @@ void Game::sInput()
     if (fireDelay > 0)
         fireDelay--;
     
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
+    if (player->cTransform)
     {
-        if (player->cTransform)
-            player->cTransform->position.y -= player->cTransform->velocity.y;
-    }
-    
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
-    {
-        if (player->cTransform)
-            player->cTransform->position.y += player->cTransform->velocity.y;
-    }
-    
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
-    {
-        if (player->cTransform)
-            player->cTransform->position.x -= player->cTransform->velocity.x;
-    }
-    
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
-    {
-        if (player->cTransform)
-            player->cTransform->position.x += player->cTransform->velocity.x;
-    }
-
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
-    {
-        if (fireDelay == 0)
+        float tmpx = player->cTransform->position.x;
+        float tmpy = player->cTransform->position.y;
+        
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
         {
-            sf::Vector2i localPosition = sf::Mouse::getPosition(*window);
-            manager->spawnBullet(player->cTransform->position, Vec2(localPosition.x, localPosition.y));
-            fireDelay = 10;
+            if (player->cTransform)
+                player->cTransform->position.y -= player->cTransform->velocity.y;
+            
+            if (player->cWindowBoundsCollision && (player->cTransform->position.y - player->cCollision->radius) < 0)
+                player->cTransform->position.y = tmpy;
         }
+        
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+        {
+            if (player->cTransform)
+                player->cTransform->position.y += player->cTransform->velocity.y;
+            
+            if (player->cWindowBoundsCollision && (player->cTransform->position.y + player->cCollision->radius) > winCfg.height)
+                player->cTransform->position.y = tmpy;
+        }
+        
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+        {
+            if (player->cTransform)
+                player->cTransform->position.x -= player->cTransform->velocity.x;
+            
+            if (player->cWindowBoundsCollision && (player->cTransform->position.x - player->cCollision->radius) < 0)
+                player->cTransform->position.x = tmpx;
+        }
+        
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+        {
+            if (player->cTransform)
+                player->cTransform->position.x += player->cTransform->velocity.x;
+            
+            if (player->cWindowBoundsCollision && (player->cTransform->position.x + player->cCollision->radius) > winCfg.width)
+                player->cTransform->position.x = tmpx;
+        }
+
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+        {
+            if (fireDelay == 0)
+            {
+                sf::Vector2i localPosition = sf::Mouse::getPosition(*window);
+                manager->spawnBullet(player->cTransform->position, Vec2(localPosition.x, localPosition.y));
+                fireDelay = 10;
+            }
+        }
+        else
+            fireDelay = 0;
     }
-    else
-        fireDelay = 0;
 }
 
 void Game::sEnemySpawner()
